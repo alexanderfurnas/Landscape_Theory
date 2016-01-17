@@ -1,16 +1,23 @@
 require(dplyr)
 
+#set your working directory here
+setwd("/Users/alexanderfurnas/Projects/Work with Axelrod/Landscape_Theory/Public_version/")
 
-#load data
-pairwise <- read.table("/Users/alexanderfurnas/Projects/Work with Axelrod/Landscape_Theory/pairwise_relationships_names.csv", header = TRUE, row.names=1, 
+#load data -- make sure you are using the appropriate file names and they are in your working directory.
+pairwise <- read.table("pairwise_relationships_names.csv", header = TRUE, row.names=1, 
                            sep = ",")
-actor_data <- read.csv("/Users/alexanderfurnas/Projects/Work with Axelrod/Landscape_Theory/Actor_data_weaksyria.csv")
+actor_data <- read.csv("Actor_data.csv")
 
-#output filepath
-filepath <- "/Users/alexanderfurnas/Projects/Work with Axelrod/Landscape_Theory/ISIS_Landscape_Results"
 
-#output filepath for favorite alignments
-filepath_fav <- "/Users/alexanderfurnas/Projects/Work with Axelrod/Landscape_Theory/ISIS_Landscape_Favored_Alignments_SyriaSensitivity"
+#output filepath -- put file name here, wd is default directory
+filepath <- "Landscape_Results"
+
+#output filepath for favorite alignments - put file name here, wd is default directory
+filepath_fav <- "Landscape_Favored_Alignments"
+
+
+
+
 
 #function for to get all of the possible alliances
 get_groupings<- function(n){
@@ -52,8 +59,13 @@ List <- list()
     grouping_result <- c(grps[,gr],energy, frustrations)
     List[[gr]] <- grouping_result
     }
-    output <- as.data.frame(t(do.call(cbind, List)))
-    cnames <- c(colnames(pairwise), "Energy", lapply(colnames(pairwise), paste0, "_Frustration"))
+    result <- as.data.frame(t(do.call(cbind, List)))
+    result <- as.data.frame(result)
+    names(result) <- c(colnames(pairwise), "Energy", lapply(colnames(pairwise), paste0, "_Frustration"))
+    result <- filter(result, US == 1)
+    lmvec <- apply(result, 1, check_local_min, n=ncol(pairwise), strength_mat=strength_mat, pairwise=pairwise)
+    output <- cbind(result, lmvec)
+    cnames <- c(colnames(pairwise), "Energy", lapply(colnames(pairwise), paste0, "_Frustration"), "Local Min")
     names(output) <- cnames
     return(output)
 }
@@ -133,9 +145,7 @@ grps <-get_groupings(ncol(pairwise))
 res <- get_scores(grps, strength_mat, pairwise)
 
 #prepare data to output
-res <- as.data.frame(res)
-res1 <- filter(res, US == 1)
-dim(res1)
+res1 <- as.data.frame(res)
 
 
 filepath <- paste(filepath, Sys.Date(), sep="_")
