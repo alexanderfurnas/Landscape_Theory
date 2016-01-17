@@ -1,6 +1,6 @@
 # Landscape Theory
 
-This code implements the bipolar alliance prediction model from Axelrod and Bennett (1993). It completes a full search the possible alliance configuration space, and thus scales with [Stirling numbers of the second kind]("https://oeis.org/A008277") S2(n,k), where n is the number of actors and k is 2. 
+This code implements the bipolar alliance prediction model from Axelrod and Bennett (1993). It completes a full search the possible alliance configuration space, and thus scales with [Stirling numbers of the second kind](https://oeis.org/A008277), S2(n,k), where n is the number of actors and k is 2. 
 
 Every additional actor roughly doubles the calculation time. Calculations for 11 actors took ~14 seconds, I estimate 20 actors should take ~120 min.
 
