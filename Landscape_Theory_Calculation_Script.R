@@ -1,19 +1,20 @@
-require(dplyr)
+library(dplyr)
+
 
 #set your working directory here
 setwd("/Users/alexanderfurnas/Projects/Work with Axelrod/Landscape_Theory/Public_version/")
 
 #load data -- make sure you are using the appropriate file names and they are in your working directory.
-pairwise <- read.table("pairwise_relationships_names.csv", header = TRUE, row.names=1, 
+pairwise <- read.table("Pairwise_propensity_Feb_20.csv", header = TRUE, row.names=1, 
                            sep = ",")
 actor_data <- read.csv("Actor_data.csv")
 
 
 #output filepath -- put file name here, wd is default directory
-filepath <- "Landscape_Results"
+filepath <- "Landscape_Results_weaksyria"
 
 #output filepath for favorite alignments - put file name here, wd is default directory
-filepath_fav <- "Landscape_Favored_Alignments"
+filepath_fav <- "Landscape_Favored_Alignments_weaksyria"
 
 
 
@@ -135,14 +136,14 @@ check_local_min <- function(i, n, strength_mat, pairwise){
 
 
 #rescale pairwise relationships
-pairwise <- pairwise -3
-pairwise[ row(pairwise) == col(pairwise) ] <- 0
+pairwise_scaled <- pairwise -3
+pairwise_scaled[ row(pairwise_scaled) == col(pairwise_scaled) ] <- 0
 
 strength_mat <- outer(as.numeric(actor_data$strength), as.numeric(actor_data$strength))
-grps <-get_groupings(ncol(pairwise))
+grps <-get_groupings(ncol(pairwise_scaled))
 
 #get all the scores
-res <- get_scores(grps, strength_mat, pairwise)
+res <- get_scores(grps, strength_mat, pairwise_scaled)
 
 #prepare data to output
 res1 <- as.data.frame(res)
@@ -173,3 +174,31 @@ favorites <- rbind(Optimal, US_best, Rus_best, Syr_best, Tur_best, S.A._best, Ir
 filepath_fav <- paste(filepath_fav, Sys.Date(), sep="_")
 filepath_fav <- paste(filepath_fav, "csv", sep =".")
 write.csv(favorites, filepath_fav)
+
+
+pairwise_unit <- (5 - pairwise)/4
+
+pairwise_unit [is.na(pairwise_unit )] <- 0
+
+
+
+library(igraph)
+weights  <- pairwise_unit*strength_mat
+
+prop_MDS <- cmdscale(as.matrix(pairwise_unit), k=2)
+
+
+net <- graph_from_adjacency_matrix(as.matrix(pairwise_scaled), weighted=TRUE, mode="undirected", diag=FALSE)
+net <- as.undirected(net)
+alignment <- unlist(Optimal[1:ncol(pairwise)])
+V(net)$alignment <- alignment
+V(net)$strength <- actor_data$strength
+E(net)$width <- abs(E(net)$weight)
+E(net)$width[E(net)$width==2] <- 3
+E(net)$lty[E(net)$weight > 0] <- 1
+E(net)$lty[E(net)$weight < 0] <- 3
+E(net)$color <- "black"
+E(net)$color[E(net)$weight < 0] <- "grey"
+plot(net, vertex.size=sqrt(V(net)$strength), mark.col = "#ededed", mark.border= "black", vertex.color="black", layout=prop_MDS,  vertex.label.dist=1, vertex.label.color ="black", vertex.shape="square")
+
+

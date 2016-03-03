@@ -1,0 +1,1326 @@
+summary(model1)
+cor(estimation_data$salary_expected, estimation_data$salary_nominal)
+estimation_data$high_salary_treatment <- 0
+estimation_data$high_salary_treatment[estimation_data$salary_diff > 0] <- 1
+summary(estimation_data$high_salary_treatment)
+sum(estimation_data$high_salary_treatment)
+library(Matching)
+?Matching
+estimation_data <- staff_sub[complete.cases(staff_sub),]#
+#
+model1 <- lm(salary_nominal ~ positionrecode + tenure_currentposition:positionrecode + tenure_congress + age_recode +q1 + q2 + race + gender + employment_status + member_party + supervision_nominal + education + office_location, data=estimation_data)#
+summary(model1)#
+#
+estimation_data$salary_expected <- model1$fit#
+estimation_data$salary_diff <- estimation_data$salary_nominal - estimation_data$salary_expected#
+#
+estimation_data$high_salary_treatment <- 0#
+estimation_data$high_salary_treatment[estimation_data$salary_diff > 0] <- 1
+sum(estimation_data$high_salary_treatment)
+library(MatchIt)
+matched_staff_data <- matchit(high_salary_treatment ~ salary_expected, satisfied_job, satisfied_office)
+matched_staff_data <- matchit(high_salary_treatment ~ salary_expected + satisfied_job + satisfied_office, data=estimation_data)
+matched_staff_data
+matched_staff_data <- matchit(high_salary_treatment ~ salary_expected + satisfied_job + satisfied_office, data=estimation_data, method="optimal")
+install.packages("optmatch")
+matched_staff_data <- matchit(high_salary_treatment ~ salary_expected + satisfied_job + satisfied_office, data=estimation_data, method="optimal")
+matched_staff_data
+MatchBalance(high_salary_treatment ~ salary_expected + satisfied_job + satisfied_office, data=matched_staff_data)
+mm <- data(matched_staff_data)
+mm <- matched_staff_data.data
+matched_staff_data$weights
+match.data(matched_staff_data)
+matched_staff_data <- match.data(matched_staff_data)
+MatchBalance(high_salary_treatment ~ salary_expected + satisfied_job + satisfied_office, data=matched_staff_data)
+summary(estimation_data$satisfied_office)
+estimation_data$satisfied_office_nominal <- NA
+estimation_data$satisfied_office_nominal[estimation_data$satisfied_office=="Somewhat dissatisfied"] <- 1
+estimation_data$satisfied_office_nominal[estimation_data$satisfied_office=="Somewhat dissatisfied"] <- 2
+estimation_data$satisfied_office_nominal[estimation_data$satisfied_office=="Very dissatisfied"] <- 1
+estimation_data$satisfied_office_nominal[estimation_data$satisfied_office=="Neutral/Neither satisfied nor dissatisfied"] <- 3
+estimation_data$satisfied_office_nominal[estimation_data$satisfied_office=="Somewhat satisfied"] <- 4
+estimation_data$satisfied_office_nominal[estimation_data$satisfied_office=="Very satisfied"] <- 5
+summary(estimation_data$satisfied_office_nominal)
+estimation_data$satisfied_job_nominal <- NA#
+estimation_data$satisfied_job_nominal[estimation_data$satisfied_job=="Very dissatisfied"] <- 1#
+estimation_data$satisfied_job_nominal[estimation_data$satisfied_job=="Somewhat dissatisfied"] <- 2#
+estimation_data$satisfied_job_nominal[estimation_data$satisfied_job=="Neutral/Neither satisfied nor dissatisfied"] <- 3#
+estimation_data$satisfied_job_nominal[estimation_data$satisfied_job=="Somewhat satisfied"] <- 4#
+estimation_data$satisfied_job_nominal[estimation_data$satisfied_job=="Very satisfied"] <- 5
+summary(estimation_data$satisfied_job_nominal)
+MatchBalance(high_salary_treatment ~ salary_expected + satisfied_job_nominal + satisfied_office_nominal, data=matched_staff_data)
+matched_staff_data <- matchit(high_salary_treatment ~ salary_expected + satisfied_job_nominal + satisfied_office_nominal, data=estimation_data, method="optimal")#
+matched_staff_data <- match.data(matched_staff_data)#
+MatchBalance(high_salary_treatment ~ salary_expected + satisfied_job_nominal + satisfied_office_nominal, data=matched_staff_data)
+summary(matched_staff_data$likely2leave)
+estimation_data$likely2leave_nominal <- NA#
+estimation_data$likely2leave_nominal[estimation_data$likely2leave=="Very unlikely"] <- 1#
+estimation_data$likely2leave_nominal[estimation_data$likely2leave=="Unlikely"] <- 2#
+estimation_data$likely2leave_nominal[estimation_data$likely2leave=="Don't know/Unsure"] <- 3#
+estimation_data$likely2leave_nominal[estimation_data$likely2leave=="Likely"] <- 4#
+estimation_data$likely2leave_nominal[estimation_data$likely2leave=="Very likely"] <- 5
+matched_staff_data <- matchit(high_salary_treatment ~ salary_expected + satisfied_job_nominal + satisfied_office_nominal, data=estimation_data, method="optimal")#
+matched_staff_data <- match.data(matched_staff_data)#
+MatchBalance(high_salary_treatment ~ salary_expected + satisfied_job_nominal + satisfied_office_nominal, data=matched_staff_data)
+estimation_data$high_salary_treatment <- 0#
+estimation_data$high_salary_treatment[estimation_data$salary_diff > 0] <- 1#
+#
+matched_staff_data <- matchit(high_salary_treatment ~ salary_expected + satisfied_job_nominal + satisfied_office_nominal, data=estimation_data, method="optimal")#
+matched_staff_data <- match.data(matched_staff_data)#
+MatchBalance(high_salary_treatment ~ salary_expected + satisfied_job_nominal + satisfied_office_nominal, data=matched_staff_data)
+head(estimation_data)
+matched_staff_data <- matchit(high_salary_treatment ~ salary_expected + satisfied_job_nominal + satisfied_office_nominal, data=estimation_data, method="optimal")
+sum(complete.cases(estimation_data))
+dim(estimation_data)
+estimation_data <- staff_sub[complete.cases(staff_sub),]
+matched_staff_data <- matchit(high_salary_treatment ~ salary_expected + satisfied_job_nominal + satisfied_office_nominal, data=estimation_data, method="optimal")
+summary(estimation_data$high_salary_treatment)
+estimation_data$high_salary_treatment[estimation_data$salary_diff > 0] <- 1
+data <- as.data.set(spss.system.file('/Users/alexanderfurnas/Dropbox/Staff turnover/CMF data/CMF-SHRM_LICStaffSurvey_Results4JHU_2015_0301.sav'))#
+staff_data <- as.data.frame(data)#
+#
+ keeps <- c("position",  "positionrecode",   "tenure_currentposition",          "tenure_currentpositionrecode",    "tenure_congress",   "tenure_congressrecode",           "age" ,   "age_generation"  ,   "q1",  "q2"  , "time_privatesector",  "icp_1", "icp_2","icp_3","icp_4","icp_5","icp_6", "scp_1",  "scp_2",  "scp_3",  "scp_4",  "scp_5", "scp_6","race","gender","marital_status", "numberofchildren_0to5yrs", "numberofchildren_6to11yrs", "numberofchildren_12to17yrs", "numberofchildren_18to25yrs", "caring_responsibiliy", "congress_chamber", "office_location", "employment_status", "member_party", "term", "member_gender", "election_margin", "supervision", "salary", "education", "likely2leave", "satisfied_job", "satisfied_office")#
+ staff_sub <- select(staff_data, one_of(keeps))#
+#
+staff_sub$salary_nominal <- NA#
+#
+staff_sub$salary_nominal[staff_sub$salary == "Less than $10,000"] <- 5000 #
+staff_sub$salary_nominal[staff_sub$salary == "$10,000 - $19,000"] <- 15000 #
+staff_sub$salary_nominal[staff_sub$salary == "$20,000 - $29,000"] <- 25000 #
+staff_sub$salary_nominal[staff_sub$salary == "$30,000 - $39,000"] <- 35000 #
+staff_sub$salary_nominal[staff_sub$salary == "$40,000 - $49,000"] <- 45000 #
+staff_sub$salary_nominal[staff_sub$salary == "$50,000 - $59,000"] <- 55000 #
+staff_sub$salary_nominal[staff_sub$salary == "$60,000 - $69,000"] <- 65000 #
+staff_sub$salary_nominal[staff_sub$salary == "$70,000 - $79,000"] <- 75000 #
+staff_sub$salary_nominal[staff_sub$salary == "$80,000 - $89,000"] <- 85000 #
+staff_sub$salary_nominal[staff_sub$salary == "$90,000 - $99,000"] <- 95000 #
+staff_sub$salary_nominal[staff_sub$salary == "$100,000 - $109,000"] <- 105000 #
+staff_sub$salary_nominal[staff_sub$salary == "$110,000 - $119,000"] <- 115000 #
+staff_sub$salary_nominal[staff_sub$salary == "$120,000 - $129,000"] <- 125000 #
+staff_sub$salary_nominal[staff_sub$salary == "$130,000 - $139,000"] <- 135000 #
+staff_sub$salary_nominal[staff_sub$salary == "$140,000 - $149,000"] <- 145000 #
+staff_sub$salary_nominal[staff_sub$salary == "$150,000 - $159,000"] <- 155000 #
+staff_sub$salary_nominal[staff_sub$salary == "$160,000 or more"] <- 165000 #
+#
+##clean birth year variable#
+#
+staff_sub$age[staff_sub$age==48] <- 1948#
+staff_sub$age[staff_sub$age==49] <- 1949#
+staff_sub$age[staff_sub$age==80] <- 1980#
+staff_sub$age[staff_sub$age==1064] <- 1964#
+staff_sub$age[staff_sub$age==1070] <- 1970#
+staff_sub$age[staff_sub$age==196000] <- 1960#
+#
+staff_sub$supervision_nominal <- NA#
+staff_sub$supervision_nominal[staff_sub$supervision== "1 to 3"] <- 2 #
+staff_sub$supervision_nominal[staff_sub$supervision== "11 to 22"] <- 16 #
+staff_sub$supervision_nominal[staff_sub$supervision== "4 to 10"] <- 7 #
+staff_sub$supervision_nominal[staff_sub$supervision== "None"] <- 0 #
+staff_sub$supervision_nominal[staff_sub$supervision== "23 or more"] <- 25 #
+#
+#nominalize job and office satisfaction#
+#
+estimation_data$satisfied_job_nominal <- NA#
+estimation_data$satisfied_job_nominal[estimation_data$satisfied_job=="Very dissatisfied"] <- 1#
+estimation_data$satisfied_job_nominal[estimation_data$satisfied_job=="Somewhat dissatisfied"] <- 2#
+estimation_data$satisfied_job_nominal[estimation_data$satisfied_job=="Neutral/Neither satisfied nor dissatisfied"] <- 3#
+estimation_data$satisfied_job_nominal[estimation_data$satisfied_job=="Somewhat satisfied"] <- 4#
+estimation_data$satisfied_job_nominal[estimation_data$satisfied_job=="Very satisfied"] <- 5#
+estimation_data$satisfied_office_nominal <- NA#
+estimation_data$satisfied_office_nominal[estimation_data$satisfied_office=="Very dissatisfied"] <- 1#
+estimation_data$satisfied_office_nominal[estimation_data$satisfied_office=="Somewhat dissatisfied"] <- 2#
+estimation_data$satisfied_office_nominal[estimation_data$satisfied_office=="Neutral/Neither satisfied nor dissatisfied"] <- 3#
+estimation_data$satisfied_office_nominal[estimation_data$satisfied_office=="Somewhat satisfied"] <- 4#
+estimation_data$satisfied_office_nominal[estimation_data$satisfied_office=="Very satisfied"] <- 5#
+estimation_data$likely2leave_nominal <- NA#
+estimation_data$likely2leave_nominal[estimation_data$likely2leave=="Very unlikely"] <- 1#
+estimation_data$likely2leave_nominal[estimation_data$likely2leave=="Unlikely"] <- 2#
+estimation_data$likely2leave_nominal[estimation_data$likely2leave=="Don't know/Unsure"] <- 3#
+estimation_data$likely2leave_nominal[estimation_data$likely2leave=="Likely"] <- 4#
+estimation_data$likely2leave_nominal[estimation_data$likely2leave=="Very likely"] <- 5#
+#
+# est_vars <- c("salary_nominal" , "positionrecode" , "tenure_currentposition" , "tenure_congress" , "age_recode" , "q1" , "q2" , "race" , "gender" , "employment_status" , "member_party" , "supervision_nominal" , "education" , "office_location")#
+# estimation_data <- select(staff_sub, one_of(est_vars))#
+estimation_data <- staff_sub[complete.cases(staff_sub),]#
+#
+model1 <- lm(salary_nominal ~ positionrecode + tenure_currentposition:positionrecode + congress_chamber:positionrecode + tenure_congress + age_recode +q1 + q2 + race + gender + employment_status + member_party + supervision_nominal + education + office_location, data=estimation_data)#
+summary(model1)#
+#
+estimation_data$salary_expected <- model1$fit#
+estimation_data$salary_diff <- estimation_data$salary_nominal - estimation_data$salary_expected#
+#
+estimation_data$high_salary_treatment <- 0#
+estimation_data$high_salary_treatment[estimation_data$salary_diff > 0] <- 1
+matched_staff_data <- matchit(high_salary_treatment ~ salary_expected + satisfied_job_nominal + satisfied_office_nominal, data=estimation_data, method="optimal")
+summary(estimation_data)
+staff_sub <- read.csv("/Users/alexanderfurnas/Projects/Staff_Turnover/staff_survey_data_working.csv")#
+#
+staff_sub$salary_nominal <- NA#
+#
+staff_sub$salary_nominal[staff_sub$salary == "Less than $10,000"] <- 5000 #
+staff_sub$salary_nominal[staff_sub$salary == "$10,000 - $19,000"] <- 15000 #
+staff_sub$salary_nominal[staff_sub$salary == "$20,000 - $29,000"] <- 25000 #
+staff_sub$salary_nominal[staff_sub$salary == "$30,000 - $39,000"] <- 35000 #
+staff_sub$salary_nominal[staff_sub$salary == "$40,000 - $49,000"] <- 45000 #
+staff_sub$salary_nominal[staff_sub$salary == "$50,000 - $59,000"] <- 55000 #
+staff_sub$salary_nominal[staff_sub$salary == "$60,000 - $69,000"] <- 65000 #
+staff_sub$salary_nominal[staff_sub$salary == "$70,000 - $79,000"] <- 75000 #
+staff_sub$salary_nominal[staff_sub$salary == "$80,000 - $89,000"] <- 85000 #
+staff_sub$salary_nominal[staff_sub$salary == "$90,000 - $99,000"] <- 95000 #
+staff_sub$salary_nominal[staff_sub$salary == "$100,000 - $109,000"] <- 105000 #
+staff_sub$salary_nominal[staff_sub$salary == "$110,000 - $119,000"] <- 115000 #
+staff_sub$salary_nominal[staff_sub$salary == "$120,000 - $129,000"] <- 125000 #
+staff_sub$salary_nominal[staff_sub$salary == "$130,000 - $139,000"] <- 135000 #
+staff_sub$salary_nominal[staff_sub$salary == "$140,000 - $149,000"] <- 145000 #
+staff_sub$salary_nominal[staff_sub$salary == "$150,000 - $159,000"] <- 155000 #
+staff_sub$salary_nominal[staff_sub$salary == "$160,000 or more"] <- 165000 #
+#
+##clean birth year variable#
+#
+staff_sub$age[staff_sub$age==48] <- 1948#
+staff_sub$age[staff_sub$age==49] <- 1949#
+staff_sub$age[staff_sub$age==80] <- 1980#
+staff_sub$age[staff_sub$age==1064] <- 1964#
+staff_sub$age[staff_sub$age==1070] <- 1970#
+staff_sub$age[staff_sub$age==196000] <- 1960#
+#
+staff_sub$supervision_nominal <- NA#
+staff_sub$supervision_nominal[staff_sub$supervision== "1 to 3"] <- 2 #
+staff_sub$supervision_nominal[staff_sub$supervision== "11 to 22"] <- 16 #
+staff_sub$supervision_nominal[staff_sub$supervision== "4 to 10"] <- 7 #
+staff_sub$supervision_nominal[staff_sub$supervision== "None"] <- 0 #
+staff_sub$supervision_nominal[staff_sub$supervision== "23 or more"] <- 25 #
+#
+#nominalize job and office satisfaction#
+#
+estimation_data$satisfied_job_nominal <- NA#
+estimation_data$satisfied_job_nominal[estimation_data$satisfied_job=="Very dissatisfied"] <- 1#
+estimation_data$satisfied_job_nominal[estimation_data$satisfied_job=="Somewhat dissatisfied"] <- 2#
+estimation_data$satisfied_job_nominal[estimation_data$satisfied_job=="Neutral/Neither satisfied nor dissatisfied"] <- 3#
+estimation_data$satisfied_job_nominal[estimation_data$satisfied_job=="Somewhat satisfied"] <- 4#
+estimation_data$satisfied_job_nominal[estimation_data$satisfied_job=="Very satisfied"] <- 5#
+estimation_data$satisfied_office_nominal <- NA#
+estimation_data$satisfied_office_nominal[estimation_data$satisfied_office=="Very dissatisfied"] <- 1#
+estimation_data$satisfied_office_nominal[estimation_data$satisfied_office=="Somewhat dissatisfied"] <- 2#
+estimation_data$satisfied_office_nominal[estimation_data$satisfied_office=="Neutral/Neither satisfied nor dissatisfied"] <- 3#
+estimation_data$satisfied_office_nominal[estimation_data$satisfied_office=="Somewhat satisfied"] <- 4#
+estimation_data$satisfied_office_nominal[estimation_data$satisfied_office=="Very satisfied"] <- 5#
+estimation_data$likely2leave_nominal <- NA#
+estimation_data$likely2leave_nominal[estimation_data$likely2leave=="Very unlikely"] <- 1#
+estimation_data$likely2leave_nominal[estimation_data$likely2leave=="Unlikely"] <- 2#
+estimation_data$likely2leave_nominal[estimation_data$likely2leave=="Don't know/Unsure"] <- 3#
+estimation_data$likely2leave_nominal[estimation_data$likely2leave=="Likely"] <- 4#
+estimation_data$likely2leave_nominal[estimation_data$likely2leave=="Very likely"] <- 5#
+#
+estimation_data$satisfied_job_nominal <- NA#
+estimation_data$satisfied_job_nominal[estimation_data$satisfied_job=="Very dissatisfied"] <- 1#
+estimation_data$satisfied_job_nominal[estimation_data$satisfied_job=="Somewhat dissatisfied"] <- 2#
+estimation_data$satisfied_job_nominal[estimation_data$satisfied_job=="Neutral/Neither satisfied nor dissatisfied"] <- 3#
+estimation_data$satisfied_job_nominal[estimation_data$satisfied_job=="Somewhat satisfied"] <- 4#
+estimation_data$satisfied_job_nominal[estimation_data$satisfied_job=="Very satisfied"] <- 5#
+estimation_data$satisfied_office_nominal <- NA#
+estimation_data$satisfied_office_nominal[estimation_data$satisfied_office=="Very dissatisfied"] <- 1#
+estimation_data$satisfied_office_nominal[estimation_data$satisfied_office=="Somewhat dissatisfied"] <- 2#
+estimation_data$satisfied_office_nominal[estimation_data$satisfied_office=="Neutral/Neither satisfied nor dissatisfied"] <- 3#
+estimation_data$satisfied_office_nominal[estimation_data$satisfied_office=="Somewhat satisfied"] <- 4#
+estimation_data$satisfied_office_nominal[estimation_data$satisfied_office=="Very satisfied"]#
+#
+# est_vars <- c("salary_nominal" , "positionrecode" , "tenure_currentposition" , "tenure_congress" , "age_recode" , "q1" , "q2" , "race" , "gender" , "employment_status" , "member_party" , "supervision_nominal" , "education" , "office_location")#
+# estimation_data <- select(staff_sub, one_of(est_vars))#
+estimation_data <- staff_sub[complete.cases(staff_sub),]#
+#
+model1 <- lm(salary_nominal ~ positionrecode + tenure_currentposition:positionrecode + congress_chamber:positionrecode + tenure_congress + age_recode +q1 + q2 + race + gender + employment_status + member_party + supervision_nominal + education + office_location, data=estimation_data)#
+summary(model1)#
+#
+estimation_data$salary_expected <- model1$fit#
+estimation_data$salary_diff <- estimation_data$salary_nominal - estimation_data$salary_expected#
+#
+estimation_data$high_salary_treatment <- 0#
+estimation_data$high_salary_treatment[estimation_data$salary_diff > 0] <- 1
+matched_staff_data <- matchit(high_salary_treatment ~ salary_expected + satisfied_job_nominal + satisfied_office_nominal, data=estimation_data, method="optimal")
+summary(estimation_data$satisfied_job_nominal)
+summary(estimation_data$satisfied_office_nominal)
+staff_sub <- read.csv("/Users/alexanderfurnas/Projects/Staff_Turnover/staff_survey_data_working.csv")#
+#
+staff_sub$salary_nominal <- NA#
+#
+staff_sub$salary_nominal[staff_sub$salary == "Less than $10,000"] <- 5000 #
+staff_sub$salary_nominal[staff_sub$salary == "$10,000 - $19,000"] <- 15000 #
+staff_sub$salary_nominal[staff_sub$salary == "$20,000 - $29,000"] <- 25000 #
+staff_sub$salary_nominal[staff_sub$salary == "$30,000 - $39,000"] <- 35000 #
+staff_sub$salary_nominal[staff_sub$salary == "$40,000 - $49,000"] <- 45000 #
+staff_sub$salary_nominal[staff_sub$salary == "$50,000 - $59,000"] <- 55000 #
+staff_sub$salary_nominal[staff_sub$salary == "$60,000 - $69,000"] <- 65000 #
+staff_sub$salary_nominal[staff_sub$salary == "$70,000 - $79,000"] <- 75000 #
+staff_sub$salary_nominal[staff_sub$salary == "$80,000 - $89,000"] <- 85000 #
+staff_sub$salary_nominal[staff_sub$salary == "$90,000 - $99,000"] <- 95000 #
+staff_sub$salary_nominal[staff_sub$salary == "$100,000 - $109,000"] <- 105000 #
+staff_sub$salary_nominal[staff_sub$salary == "$110,000 - $119,000"] <- 115000 #
+staff_sub$salary_nominal[staff_sub$salary == "$120,000 - $129,000"] <- 125000 #
+staff_sub$salary_nominal[staff_sub$salary == "$130,000 - $139,000"] <- 135000 #
+staff_sub$salary_nominal[staff_sub$salary == "$140,000 - $149,000"] <- 145000 #
+staff_sub$salary_nominal[staff_sub$salary == "$150,000 - $159,000"] <- 155000 #
+staff_sub$salary_nominal[staff_sub$salary == "$160,000 or more"] <- 165000 #
+#
+##clean birth year variable#
+#
+staff_sub$age[staff_sub$age==48] <- 1948#
+staff_sub$age[staff_sub$age==49] <- 1949#
+staff_sub$age[staff_sub$age==80] <- 1980#
+staff_sub$age[staff_sub$age==1064] <- 1964#
+staff_sub$age[staff_sub$age==1070] <- 1970#
+staff_sub$age[staff_sub$age==196000] <- 1960#
+#
+staff_sub$supervision_nominal <- NA#
+staff_sub$supervision_nominal[staff_sub$supervision== "1 to 3"] <- 2 #
+staff_sub$supervision_nominal[staff_sub$supervision== "11 to 22"] <- 16 #
+staff_sub$supervision_nominal[staff_sub$supervision== "4 to 10"] <- 7 #
+staff_sub$supervision_nominal[staff_sub$supervision== "None"] <- 0 #
+staff_sub$supervision_nominal[staff_sub$supervision== "23 or more"] <- 25
+head(staff_sub)
+estimation_data$satisfied_job_nominal <- NA
+head(staff_sub)
+staff_sub <- read.csv("/Users/alexanderfurnas/Projects/Staff_Turnover/staff_survey_data_working.csv")#
+#
+staff_sub$salary_nominal <- NA#
+#
+staff_sub$salary_nominal[staff_sub$salary == "Less than $10,000"] <- 5000 #
+staff_sub$salary_nominal[staff_sub$salary == "$10,000 - $19,000"] <- 15000 #
+staff_sub$salary_nominal[staff_sub$salary == "$20,000 - $29,000"] <- 25000 #
+staff_sub$salary_nominal[staff_sub$salary == "$30,000 - $39,000"] <- 35000 #
+staff_sub$salary_nominal[staff_sub$salary == "$40,000 - $49,000"] <- 45000 #
+staff_sub$salary_nominal[staff_sub$salary == "$50,000 - $59,000"] <- 55000 #
+staff_sub$salary_nominal[staff_sub$salary == "$60,000 - $69,000"] <- 65000 #
+staff_sub$salary_nominal[staff_sub$salary == "$70,000 - $79,000"] <- 75000 #
+staff_sub$salary_nominal[staff_sub$salary == "$80,000 - $89,000"] <- 85000 #
+staff_sub$salary_nominal[staff_sub$salary == "$90,000 - $99,000"] <- 95000 #
+staff_sub$salary_nominal[staff_sub$salary == "$100,000 - $109,000"] <- 105000 #
+staff_sub$salary_nominal[staff_sub$salary == "$110,000 - $119,000"] <- 115000 #
+staff_sub$salary_nominal[staff_sub$salary == "$120,000 - $129,000"] <- 125000 #
+staff_sub$salary_nominal[staff_sub$salary == "$130,000 - $139,000"] <- 135000 #
+staff_sub$salary_nominal[staff_sub$salary == "$140,000 - $149,000"] <- 145000 #
+staff_sub$salary_nominal[staff_sub$salary == "$150,000 - $159,000"] <- 155000 #
+staff_sub$salary_nominal[staff_sub$salary == "$160,000 or more"] <- 165000 #
+#
+##clean birth year variable#
+#
+staff_sub$age[staff_sub$age==48] <- 1948#
+staff_sub$age[staff_sub$age==49] <- 1949#
+staff_sub$age[staff_sub$age==80] <- 1980#
+staff_sub$age[staff_sub$age==1064] <- 1964#
+staff_sub$age[staff_sub$age==1070] <- 1970#
+staff_sub$age[staff_sub$age==196000] <- 1960#
+#
+staff_sub$supervision_nominal <- NA#
+staff_sub$supervision_nominal[staff_sub$supervision== "1 to 3"] <- 2 #
+staff_sub$supervision_nominal[staff_sub$supervision== "11 to 22"] <- 16 #
+staff_sub$supervision_nominal[staff_sub$supervision== "4 to 10"] <- 7 #
+staff_sub$supervision_nominal[staff_sub$supervision== "None"] <- 0 #
+staff_sub$supervision_nominal[staff_sub$supervision== "23 or more"] <- 25 #
+#
+#nominalize job and office satisfaction#
+#
+staff_sub$satisfied_job_nominal <- NA#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Very dissatisfied"] <- 1#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Somewhat dissatisfied"] <- 2#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Neutral/Neither satisfied nor dissatisfied"] <- 3#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Somewhat satisfied"] <- 4#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Very satisfied"] <- 5#
+staff_sub$satisfied_office_nominal <- NA#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Very dissatisfied"] <- 1#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Somewhat dissatisfied"] <- 2#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Neutral/Neither satisfied nor dissatisfied"] <- 3#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Somewhat satisfied"] <- 4#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Very satisfied"] <- 5#
+staff_sub$likely2leave_nominal <- NA#
+staff_sub$likely2leave_nominal[staff_sub$likely2leave=="Very unlikely"] <- 1#
+staff_sub$likely2leave_nominal[staff_sub$likely2leave=="Unlikely"] <- 2#
+staff_sub$likely2leave_nominal[staff_sub$likely2leave=="Don't know/Unsure"] <- 3#
+staff_sub$likely2leave_nominal[staff_sub$likely2leave=="Likely"] <- 4#
+staff_sub$likely2leave_nominal[staff_sub$likely2leave=="Very likely"] <- 5#
+#
+staff_sub$satisfied_job_nominal <- NA#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Very dissatisfied"] <- 1#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Somewhat dissatisfied"] <- 2#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Neutral/Neither satisfied nor dissatisfied"] <- 3#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Somewhat satisfied"] <- 4#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Very satisfied"] <- 5#
+staff_sub$satisfied_office_nominal <- NA#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Very dissatisfied"] <- 1#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Somewhat dissatisfied"] <- 2#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Neutral/Neither satisfied nor dissatisfied"] <- 3#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Somewhat satisfied"] <- 4#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Very satisfied"]#
+# est_vars <- c("salary_nominal" , "positionrecode" , "tenure_currentposition" , "tenure_congress" , "age_recode" , "q1" , "q2" , "race" , "gender" , "employment_status" , "member_party" , "supervision_nominal" , "education" , "office_location")#
+# estimation_data <- select(staff_sub, one_of(est_vars))#
+estimation_data <- staff_sub[complete.cases(staff_sub),]#
+#
+model1 <- lm(salary_nominal ~ positionrecode + tenure_currentposition:positionrecode + congress_chamber:positionrecode + tenure_congress + age_recode +q1 + q2 + race + gender + employment_status + member_party + supervision_nominal + education + office_location, data=estimation_data)#
+summary(model1)#
+#
+estimation_data$salary_expected <- model1$fit#
+estimation_data$salary_diff <- estimation_data$salary_nominal - estimation_data$salary_expected#
+#
+estimation_data$high_salary_treatment <- 0#
+estimation_data$high_salary_treatment[estimation_data$salary_diff > 0] <- 1
+matched_staff_data <- matchit(high_salary_treatment ~ salary_expected + satisfied_job_nominal + satisfied_office_nominal, data=estimation_data, method="optimal")
+matched_staff_data <- match.data(matched_staff_data)#
+MatchBalance(high_salary_treatment ~ salary_expected + satisfied_job_nominal + satisfied_office_nominal, data=matched_staff_data)
+lm(likely2leave_nominal~ high_salary_treatment + salary_expected + satisfied_job_nominal + satisfied_office_nominal, data=matched_staff_data)
+lm(likely2leave_nominal~ high_salary_treatment, data=matched_staff_data)
+head(matched_staff_data)
+matched_use <- subset(matched_staff_data, weights ==1)
+lm(likely2leave_nominal ~ high_salary_treatment + salary_expected + satisfied_job_nominal + satisfied_office_nominal. data=matched_use)
+lm(likely2leave_nominal ~ high_salary_treatment + salary_expected + satisfied_job_nominal + satisfied_office_nominal, data=matched_use)
+model2 <- lm(likely2leave_nominal ~ high_salary_treatment + salary_expected + satisfied_job_nominal + satisfied_office_nominal, data=matched_use)
+(--vanilla)
+--vanilla
+rm(list=ls())
+require(memisc)#
+require(dplyr)#
+#
+#data <- as.data.set(spss.system.file('/Users/alexanderfurnas/Dropbox/Staff turnover/CMF data/CMF-SHRM_LICStaffSurvey_Results4JHU_2015_0301.sav'))#
+##keeps <- c("position",  "positionrecode",   "tenure_currentposition",          "tenure_currentpositionrecode",    "tenure_congress",   "tenure_congressrecode",           "age" ,   "age_generation"  ,   "q1",  "q2"  , "time_privatesector",  "icp_1", "icp_2","icp_3","icp_4","icp_5","icp_6", "scp_1",  "scp_2",  "scp_3",  "scp_4",  "scp_5", "scp_6","race","gender","marital_status", "numberofchildren_0to5yrs", "numberofchildren_6to11yrs", "numberofchildren_12to17yrs", "numberofchildren_18to25yrs", "caring_responsibiliy", "congress_chamber", "office_location", "employment_status", "member_party", "term", "member_gender", "election_margin", "supervision", "salary", "education", "likely2leave", "satisfied_job", "satisfied_office")#
+ #staff_sub <- select(staff_data, one_of(keeps))#
+ staff_sub <- read.csv("/Users/alexanderfurnas/Projects/Staff_Turnover/staff_survey_data_working.csv")#
+#
+staff_sub$salary_nominal <- NA#
+#
+staff_sub$salary_nominal[staff_sub$salary == "Less than $10,000"] <- 5000 #
+staff_sub$salary_nominal[staff_sub$salary == "$10,000 - $19,000"] <- 15000 #
+staff_sub$salary_nominal[staff_sub$salary == "$20,000 - $29,000"] <- 25000 #
+staff_sub$salary_nominal[staff_sub$salary == "$30,000 - $39,000"] <- 35000 #
+staff_sub$salary_nominal[staff_sub$salary == "$40,000 - $49,000"] <- 45000 #
+staff_sub$salary_nominal[staff_sub$salary == "$50,000 - $59,000"] <- 55000 #
+staff_sub$salary_nominal[staff_sub$salary == "$60,000 - $69,000"] <- 65000 #
+staff_sub$salary_nominal[staff_sub$salary == "$70,000 - $79,000"] <- 75000 #
+staff_sub$salary_nominal[staff_sub$salary == "$80,000 - $89,000"] <- 85000 #
+staff_sub$salary_nominal[staff_sub$salary == "$90,000 - $99,000"] <- 95000 #
+staff_sub$salary_nominal[staff_sub$salary == "$100,000 - $109,000"] <- 105000 #
+staff_sub$salary_nominal[staff_sub$salary == "$110,000 - $119,000"] <- 115000 #
+staff_sub$salary_nominal[staff_sub$salary == "$120,000 - $129,000"] <- 125000 #
+staff_sub$salary_nominal[staff_sub$salary == "$130,000 - $139,000"] <- 135000 #
+staff_sub$salary_nominal[staff_sub$salary == "$140,000 - $149,000"] <- 145000 #
+staff_sub$salary_nominal[staff_sub$salary == "$150,000 - $159,000"] <- 155000 #
+staff_sub$salary_nominal[staff_sub$salary == "$160,000 or more"] <- 165000 #
+#
+##clean birth year variable#
+#
+staff_sub$age[staff_sub$age==48] <- 1948#
+staff_sub$age[staff_sub$age==49] <- 1949#
+staff_sub$age[staff_sub$age==80] <- 1980#
+staff_sub$age[staff_sub$age==1064] <- 1964#
+staff_sub$age[staff_sub$age==1070] <- 1970#
+staff_sub$age[staff_sub$age==196000] <- 1960#
+#
+staff_sub$supervision_nominal <- NA#
+staff_sub$supervision_nominal[staff_sub$supervision== "1 to 3"] <- 2 #
+staff_sub$supervision_nominal[staff_sub$supervision== "11 to 22"] <- 16 #
+staff_sub$supervision_nominal[staff_sub$supervision== "4 to 10"] <- 7 #
+staff_sub$supervision_nominal[staff_sub$supervision== "None"] <- 0 #
+staff_sub$supervision_nominal[staff_sub$supervision== "23 or more"] <- 25 #
+#
+#nominalize job and office satisfaction#
+#
+staff_sub$satisfied_job_nominal <- NA#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Very dissatisfied"] <- 1#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Somewhat dissatisfied"] <- 2#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Neutral/Neither satisfied nor dissatisfied"] <- 3#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Somewhat satisfied"] <- 4#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Very satisfied"] <- 5#
+staff_sub$satisfied_office_nominal <- NA#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Very dissatisfied"] <- 1#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Somewhat dissatisfied"] <- 2#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Neutral/Neither satisfied nor dissatisfied"] <- 3#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Somewhat satisfied"] <- 4#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Very satisfied"] <- 5#
+staff_sub$likely2leave_nominal <- NA#
+staff_sub$likely2leave_nominal[staff_sub$likely2leave=="Very unlikely"] <- 1#
+staff_sub$likely2leave_nominal[staff_sub$likely2leave=="Unlikely"] <- 2#
+staff_sub$likely2leave_nominal[staff_sub$likely2leave=="Don't know/Unsure"] <- 3#
+staff_sub$likely2leave_nominal[staff_sub$likely2leave=="Likely"] <- 4#
+staff_sub$likely2leave_nominal[staff_sub$likely2leave=="Very likely"] <- 5#
+#
+staff_sub$satisfied_job_nominal <- NA#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Very dissatisfied"] <- 1#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Somewhat dissatisfied"] <- 2#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Neutral/Neither satisfied nor dissatisfied"] <- 3#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Somewhat satisfied"] <- 4#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Very satisfied"] <- 5#
+staff_sub$satisfied_office_nominal <- NA#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Very dissatisfied"] <- 1#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Somewhat dissatisfied"] <- 2#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Neutral/Neither satisfied nor dissatisfied"] <- 3#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Somewhat satisfied"] <- 4#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Very satisfied"]#
+# est_vars <- c("salary_nominal" , "positionrecode" , "tenure_currentposition" , "tenure_congress" , "age_recode" , "q1" , "q2" , "race" , "gender" , "employment_status" , "member_party" , "supervision_nominal" , "education" , "office_location")#
+# estimation_data <- select(staff_sub, one_of(est_vars))#
+estimation_data <- staff_sub[complete.cases(staff_sub),]#
+#
+model1 <- lm(salary_nominal ~ positionrecode + tenure_currentposition:positionrecode + congress_chamber:positionrecode + tenure_congress + age_recode +q1 + q2 + race + gender + employment_status + member_party + supervision_nominal + education + office_location, data=estimation_data)#
+summary(model1)#
+#
+estimation_data$salary_expected <- model1$fit#
+estimation_data$salary_diff <- estimation_data$salary_nominal - estimation_data$salary_expected#
+#
+estimation_data$high_salary_treatment <- 0#
+estimation_data$high_salary_treatment[estimation_data$salary_diff > 0] <- 1#
+#
+matched_staff_data <- matchit(high_salary_treatment ~ salary_expected + satisfied_job_nominal + satisfied_office_nominal, data=estimation_data, method="optimal")#
+matched_staff_data <- match.data(matched_staff_data)#
+MatchBalance(high_salary_treatment ~ salary_expected + satisfied_job_nominal + satisfied_office_nominal, data=matched_staff_data)#
+#
+matched_use <- subset(matched_staff_data, weights ==1)#
+model2 <- lm(likely2leave_nominal ~ high_salary_treatment + salary_expected + satisfied_job_nominal + satisfied_office_nominal, data=matched_use)
+require(memisc)#
+require(dplyr)#
+require(MatchIt)#
+require(Matching)#
+#
+#data <- as.data.set(spss.system.file('/Users/alexanderfurnas/Dropbox/Staff turnover/CMF data/CMF-SHRM_LICStaffSurvey_Results4JHU_2015_0301.sav'))#
+##keeps <- c("position",  "positionrecode",   "tenure_currentposition",          "tenure_currentpositionrecode",    "tenure_congress",   "tenure_congressrecode",           "age" ,   "age_generation"  ,   "q1",  "q2"  , "time_privatesector",  "icp_1", "icp_2","icp_3","icp_4","icp_5","icp_6", "scp_1",  "scp_2",  "scp_3",  "scp_4",  "scp_5", "scp_6","race","gender","marital_status", "numberofchildren_0to5yrs", "numberofchildren_6to11yrs", "numberofchildren_12to17yrs", "numberofchildren_18to25yrs", "caring_responsibiliy", "congress_chamber", "office_location", "employment_status", "member_party", "term", "member_gender", "election_margin", "supervision", "salary", "education", "likely2leave", "satisfied_job", "satisfied_office")#
+ #staff_sub <- select(staff_data, one_of(keeps))#
+ staff_sub <- read.csv("/Users/alexanderfurnas/Projects/Staff_Turnover/staff_survey_data_working.csv")#
+#
+staff_sub$salary_nominal <- NA#
+#
+staff_sub$salary_nominal[staff_sub$salary == "Less than $10,000"] <- 5000 #
+staff_sub$salary_nominal[staff_sub$salary == "$10,000 - $19,000"] <- 15000 #
+staff_sub$salary_nominal[staff_sub$salary == "$20,000 - $29,000"] <- 25000 #
+staff_sub$salary_nominal[staff_sub$salary == "$30,000 - $39,000"] <- 35000 #
+staff_sub$salary_nominal[staff_sub$salary == "$40,000 - $49,000"] <- 45000 #
+staff_sub$salary_nominal[staff_sub$salary == "$50,000 - $59,000"] <- 55000 #
+staff_sub$salary_nominal[staff_sub$salary == "$60,000 - $69,000"] <- 65000 #
+staff_sub$salary_nominal[staff_sub$salary == "$70,000 - $79,000"] <- 75000 #
+staff_sub$salary_nominal[staff_sub$salary == "$80,000 - $89,000"] <- 85000 #
+staff_sub$salary_nominal[staff_sub$salary == "$90,000 - $99,000"] <- 95000 #
+staff_sub$salary_nominal[staff_sub$salary == "$100,000 - $109,000"] <- 105000 #
+staff_sub$salary_nominal[staff_sub$salary == "$110,000 - $119,000"] <- 115000 #
+staff_sub$salary_nominal[staff_sub$salary == "$120,000 - $129,000"] <- 125000 #
+staff_sub$salary_nominal[staff_sub$salary == "$130,000 - $139,000"] <- 135000 #
+staff_sub$salary_nominal[staff_sub$salary == "$140,000 - $149,000"] <- 145000 #
+staff_sub$salary_nominal[staff_sub$salary == "$150,000 - $159,000"] <- 155000 #
+staff_sub$salary_nominal[staff_sub$salary == "$160,000 or more"] <- 165000 #
+#
+##clean birth year variable#
+#
+staff_sub$age[staff_sub$age==48] <- 1948#
+staff_sub$age[staff_sub$age==49] <- 1949#
+staff_sub$age[staff_sub$age==80] <- 1980#
+staff_sub$age[staff_sub$age==1064] <- 1964#
+staff_sub$age[staff_sub$age==1070] <- 1970#
+staff_sub$age[staff_sub$age==196000] <- 1960#
+#
+staff_sub$supervision_nominal <- NA#
+staff_sub$supervision_nominal[staff_sub$supervision== "1 to 3"] <- 2 #
+staff_sub$supervision_nominal[staff_sub$supervision== "11 to 22"] <- 16 #
+staff_sub$supervision_nominal[staff_sub$supervision== "4 to 10"] <- 7 #
+staff_sub$supervision_nominal[staff_sub$supervision== "None"] <- 0 #
+staff_sub$supervision_nominal[staff_sub$supervision== "23 or more"] <- 25 #
+#
+#nominalize job and office satisfaction#
+#
+staff_sub$satisfied_job_nominal <- NA#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Very dissatisfied"] <- 1#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Somewhat dissatisfied"] <- 2#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Neutral/Neither satisfied nor dissatisfied"] <- 3#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Somewhat satisfied"] <- 4#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Very satisfied"] <- 5#
+staff_sub$satisfied_office_nominal <- NA#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Very dissatisfied"] <- 1#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Somewhat dissatisfied"] <- 2#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Neutral/Neither satisfied nor dissatisfied"] <- 3#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Somewhat satisfied"] <- 4#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Very satisfied"] <- 5#
+staff_sub$likely2leave_nominal <- NA#
+staff_sub$likely2leave_nominal[staff_sub$likely2leave=="Very unlikely"] <- 1#
+staff_sub$likely2leave_nominal[staff_sub$likely2leave=="Unlikely"] <- 2#
+staff_sub$likely2leave_nominal[staff_sub$likely2leave=="Don't know/Unsure"] <- 3#
+staff_sub$likely2leave_nominal[staff_sub$likely2leave=="Likely"] <- 4#
+staff_sub$likely2leave_nominal[staff_sub$likely2leave=="Very likely"] <- 5#
+#
+staff_sub$satisfied_job_nominal <- NA#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Very dissatisfied"] <- 1#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Somewhat dissatisfied"] <- 2#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Neutral/Neither satisfied nor dissatisfied"] <- 3#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Somewhat satisfied"] <- 4#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Very satisfied"] <- 5#
+staff_sub$satisfied_office_nominal <- NA#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Very dissatisfied"] <- 1#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Somewhat dissatisfied"] <- 2#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Neutral/Neither satisfied nor dissatisfied"] <- 3#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Somewhat satisfied"] <- 4#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Very satisfied"]#
+# est_vars <- c("salary_nominal" , "positionrecode" , "tenure_currentposition" , "tenure_congress" , "age_recode" , "q1" , "q2" , "race" , "gender" , "employment_status" , "member_party" , "supervision_nominal" , "education" , "office_location")#
+# estimation_data <- select(staff_sub, one_of(est_vars))#
+estimation_data <- staff_sub[complete.cases(staff_sub),]#
+#
+model1 <- lm(salary_nominal ~ positionrecode + tenure_currentposition:positionrecode + congress_chamber:positionrecode + tenure_congress + age_recode +q1 + q2 + race + gender + employment_status + member_party + supervision_nominal + education + office_location, data=estimation_data)#
+summary(model1)#
+#
+estimation_data$salary_expected <- model1$fit#
+estimation_data$salary_diff <- estimation_data$salary_nominal - estimation_data$salary_expected#
+#
+estimation_data$high_salary_treatment <- 0#
+estimation_data$high_salary_treatment[estimation_data$salary_diff > 0] <- 1#
+#
+matched_staff_data <- matchit(high_salary_treatment ~ salary_expected + satisfied_job_nominal + satisfied_office_nominal, data=estimation_data, method="optimal")#
+matched_staff_data <- match.data(matched_staff_data)#
+MatchBalance(high_salary_treatment ~ salary_expected + satisfied_job_nominal + satisfied_office_nominal, data=matched_staff_data)#
+#
+matched_use <- subset(matched_staff_data, weights ==1)#
+model2 <- lm(likely2leave_nominal ~ high_salary_treatment + salary_expected + satisfied_job_nominal + satisfied_office_nominal, data=matched_use)
+summary(model2)
+require(memisc)#
+require(dplyr)#
+require(MatchIt)#
+require(Matching)#
+#
+#data <- as.data.set(spss.system.file('/Users/alexanderfurnas/Dropbox/Staff turnover/CMF data/CMF-SHRM_LICStaffSurvey_Results4JHU_2015_0301.sav'))#
+##keeps <- c("position",  "positionrecode",   "tenure_currentposition",          "tenure_currentpositionrecode",    "tenure_congress",   "tenure_congressrecode",           "age" ,   "age_generation"  ,   "q1",  "q2"  , "time_privatesector",  "icp_1", "icp_2","icp_3","icp_4","icp_5","icp_6", "scp_1",  "scp_2",  "scp_3",  "scp_4",  "scp_5", "scp_6","race","gender","marital_status", "numberofchildren_0to5yrs", "numberofchildren_6to11yrs", "numberofchildren_12to17yrs", "numberofchildren_18to25yrs", "caring_responsibiliy", "congress_chamber", "office_location", "employment_status", "member_party", "term", "member_gender", "election_margin", "supervision", "salary", "education", "likely2leave", "satisfied_job", "satisfied_office")#
+ #staff_sub <- select(staff_data, one_of(keeps))#
+ staff_sub <- read.csv("/Users/alexanderfurnas/Projects/Staff_Turnover/staff_survey_data_working.csv")#
+#
+staff_sub$salary_nominal <- NA#
+#
+staff_sub$salary_nominal[staff_sub$salary == "Less than $10,000"] <- 5000 #
+staff_sub$salary_nominal[staff_sub$salary == "$10,000 - $19,000"] <- 15000 #
+staff_sub$salary_nominal[staff_sub$salary == "$20,000 - $29,000"] <- 25000 #
+staff_sub$salary_nominal[staff_sub$salary == "$30,000 - $39,000"] <- 35000 #
+staff_sub$salary_nominal[staff_sub$salary == "$40,000 - $49,000"] <- 45000 #
+staff_sub$salary_nominal[staff_sub$salary == "$50,000 - $59,000"] <- 55000 #
+staff_sub$salary_nominal[staff_sub$salary == "$60,000 - $69,000"] <- 65000 #
+staff_sub$salary_nominal[staff_sub$salary == "$70,000 - $79,000"] <- 75000 #
+staff_sub$salary_nominal[staff_sub$salary == "$80,000 - $89,000"] <- 85000 #
+staff_sub$salary_nominal[staff_sub$salary == "$90,000 - $99,000"] <- 95000 #
+staff_sub$salary_nominal[staff_sub$salary == "$100,000 - $109,000"] <- 105000 #
+staff_sub$salary_nominal[staff_sub$salary == "$110,000 - $119,000"] <- 115000 #
+staff_sub$salary_nominal[staff_sub$salary == "$120,000 - $129,000"] <- 125000 #
+staff_sub$salary_nominal[staff_sub$salary == "$130,000 - $139,000"] <- 135000 #
+staff_sub$salary_nominal[staff_sub$salary == "$140,000 - $149,000"] <- 145000 #
+staff_sub$salary_nominal[staff_sub$salary == "$150,000 - $159,000"] <- 155000 #
+staff_sub$salary_nominal[staff_sub$salary == "$160,000 or more"] <- 165000 #
+#
+##clean birth year variable#
+#
+staff_sub$age[staff_sub$age==48] <- 1948#
+staff_sub$age[staff_sub$age==49] <- 1949#
+staff_sub$age[staff_sub$age==80] <- 1980#
+staff_sub$age[staff_sub$age==1064] <- 1964#
+staff_sub$age[staff_sub$age==1070] <- 1970#
+staff_sub$age[staff_sub$age==196000] <- 1960#
+#
+staff_sub$supervision_nominal <- NA#
+staff_sub$supervision_nominal[staff_sub$supervision== "1 to 3"] <- 2 #
+staff_sub$supervision_nominal[staff_sub$supervision== "11 to 22"] <- 16 #
+staff_sub$supervision_nominal[staff_sub$supervision== "4 to 10"] <- 7 #
+staff_sub$supervision_nominal[staff_sub$supervision== "None"] <- 0 #
+staff_sub$supervision_nominal[staff_sub$supervision== "23 or more"] <- 25 #
+#
+#nominalize job and office satisfaction#
+#
+staff_sub$satisfied_job_nominal <- NA#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Very dissatisfied"] <- 1#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Somewhat dissatisfied"] <- 2#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Neutral/Neither satisfied nor dissatisfied"] <- 3#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Somewhat satisfied"] <- 4#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Very satisfied"] <- 5#
+staff_sub$satisfied_office_nominal <- NA#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Very dissatisfied"] <- 1#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Somewhat dissatisfied"] <- 2#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Neutral/Neither satisfied nor dissatisfied"] <- 3#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Somewhat satisfied"] <- 4#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Very satisfied"] <- 5#
+staff_sub$likely2leave_nominal <- NA#
+staff_sub$likely2leave_nominal[staff_sub$likely2leave=="Very unlikely"] <- 1#
+staff_sub$likely2leave_nominal[staff_sub$likely2leave=="Unlikely"] <- 2#
+staff_sub$likely2leave_nominal[staff_sub$likely2leave=="Don't know/Unsure"] <- 3#
+staff_sub$likely2leave_nominal[staff_sub$likely2leave=="Likely"] <- 4#
+staff_sub$likely2leave_nominal[staff_sub$likely2leave=="Very likely"] <- 5#
+#
+staff_sub$satisfied_job_nominal <- NA#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Very dissatisfied"] <- 1#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Somewhat dissatisfied"] <- 2#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Neutral/Neither satisfied nor dissatisfied"] <- 3#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Somewhat satisfied"] <- 4#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Very satisfied"] <- 5#
+staff_sub$satisfied_office_nominal <- NA#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Very dissatisfied"] <- 1#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Somewhat dissatisfied"] <- 2#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Neutral/Neither satisfied nor dissatisfied"] <- 3#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Somewhat satisfied"] <- 4#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Very satisfied"]#
+# est_vars <- c("salary_nominal" , "positionrecode" , "tenure_currentposition" , "tenure_congress" , "age_recode" , "q1" , "q2" , "race" , "gender" , "employment_status" , "member_party" , "supervision_nominal" , "education" , "office_location")#
+# estimation_data <- select(staff_sub, one_of(est_vars))#
+estimation_data <- staff_sub[complete.cases(staff_sub),]#
+#
+model1 <- lm(salary_nominal ~ positionrecode + tenure_currentposition:positionrecode + congress_chamber:positionrecode + tenure_congress + age_recode +q1 + q2 + race + gender + employment_status + member_party + supervision_nominal + education + office_location, data=estimation_data)#
+summary(model1)#
+#
+estimation_data$salary_expected <- model1$fit#
+estimation_data$salary_diff <- estimation_data$salary_nominal - estimation_data$salary_expected#
+#
+estimation_data$high_salary_treatment <- 0#
+estimation_data$high_salary_treatment[estimation_data$salary_diff > 0] <- 1#
+#
+matched_staff_data <- matchit(high_salary_treatment ~ salary_expected + satisfied_job_nominal + satisfied_office_nominal, data=estimation_data, method="optimal")#
+matched_staff_data <- match.data(matched_staff_data)#
+MatchBalance(high_salary_treatment ~ salary_expected + satisfied_job_nominal + satisfied_office_nominal, data=matched_staff_data)#
+#
+matched_use <- subset(matched_staff_data, weights ==1)#
+model2 <- lm(likely2leave_nominal ~ high_salary_treatment, data=matched_use)
+summary(model2)
+dim(staff_sub)
+dim(estimation_data)
+staff_sub <- read.csv("/Users/alexanderfurnas/Projects/Staff_Turnover/staff_survey_data_working.csv")#
+#
+staff_sub$salary_nominal <- NA#
+#
+staff_sub$salary_nominal[staff_sub$salary == "Less than $10,000"] <- 5000 #
+staff_sub$salary_nominal[staff_sub$salary == "$10,000 - $19,000"] <- 15000 #
+staff_sub$salary_nominal[staff_sub$salary == "$20,000 - $29,000"] <- 25000 #
+staff_sub$salary_nominal[staff_sub$salary == "$30,000 - $39,000"] <- 35000 #
+staff_sub$salary_nominal[staff_sub$salary == "$40,000 - $49,000"] <- 45000 #
+staff_sub$salary_nominal[staff_sub$salary == "$50,000 - $59,000"] <- 55000 #
+staff_sub$salary_nominal[staff_sub$salary == "$60,000 - $69,000"] <- 65000 #
+staff_sub$salary_nominal[staff_sub$salary == "$70,000 - $79,000"] <- 75000 #
+staff_sub$salary_nominal[staff_sub$salary == "$80,000 - $89,000"] <- 85000 #
+staff_sub$salary_nominal[staff_sub$salary == "$90,000 - $99,000"] <- 95000 #
+staff_sub$salary_nominal[staff_sub$salary == "$100,000 - $109,000"] <- 105000 #
+staff_sub$salary_nominal[staff_sub$salary == "$110,000 - $119,000"] <- 115000 #
+staff_sub$salary_nominal[staff_sub$salary == "$120,000 - $129,000"] <- 125000 #
+staff_sub$salary_nominal[staff_sub$salary == "$130,000 - $139,000"] <- 135000 #
+staff_sub$salary_nominal[staff_sub$salary == "$140,000 - $149,000"] <- 145000 #
+staff_sub$salary_nominal[staff_sub$salary == "$150,000 - $159,000"] <- 155000 #
+staff_sub$salary_nominal[staff_sub$salary == "$160,000 or more"] <- 165000 #
+#
+##clean birth year variable#
+#
+staff_sub$age[staff_sub$age==48] <- 1948#
+staff_sub$age[staff_sub$age==49] <- 1949#
+staff_sub$age[staff_sub$age==80] <- 1980#
+staff_sub$age[staff_sub$age==1064] <- 1964#
+staff_sub$age[staff_sub$age==1070] <- 1970#
+staff_sub$age[staff_sub$age==196000] <- 1960#
+#
+staff_sub$supervision_nominal <- NA#
+staff_sub$supervision_nominal[staff_sub$supervision== "1 to 3"] <- 2 #
+staff_sub$supervision_nominal[staff_sub$supervision== "11 to 22"] <- 16 #
+staff_sub$supervision_nominal[staff_sub$supervision== "4 to 10"] <- 7 #
+staff_sub$supervision_nominal[staff_sub$supervision== "None"] <- 0 #
+staff_sub$supervision_nominal[staff_sub$supervision== "23 or more"] <- 25 #
+#
+#nominalize job and office satisfaction#
+#
+staff_sub$satisfied_job_nominal <- NA#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Very dissatisfied"] <- 1#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Somewhat dissatisfied"] <- 2#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Neutral/Neither satisfied nor dissatisfied"] <- 3#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Somewhat satisfied"] <- 4#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Very satisfied"] <- 5#
+staff_sub$satisfied_office_nominal <- NA#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Very dissatisfied"] <- 1#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Somewhat dissatisfied"] <- 2#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Neutral/Neither satisfied nor dissatisfied"] <- 3#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Somewhat satisfied"] <- 4#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Very satisfied"] <- 5#
+staff_sub$likely2leave_nominal <- NA#
+staff_sub$likely2leave_nominal[staff_sub$likely2leave=="Very unlikely"] <- 1#
+staff_sub$likely2leave_nominal[staff_sub$likely2leave=="Unlikely"] <- 2#
+staff_sub$likely2leave_nominal[staff_sub$likely2leave=="Don't know/Unsure"] <- 3#
+staff_sub$likely2leave_nominal[staff_sub$likely2leave=="Likely"] <- 4#
+staff_sub$likely2leave_nominal[staff_sub$likely2leave=="Very likely"] <- 5#
+#
+staff_sub$satisfied_job_nominal <- NA#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Very dissatisfied"] <- 1#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Somewhat dissatisfied"] <- 2#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Neutral/Neither satisfied nor dissatisfied"] <- 3#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Somewhat satisfied"] <- 4#
+staff_sub$satisfied_job_nominal[staff_sub$satisfied_job=="Very satisfied"] <- 5#
+staff_sub$satisfied_office_nominal <- NA#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Very dissatisfied"] <- 1#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Somewhat dissatisfied"] <- 2#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Neutral/Neither satisfied nor dissatisfied"] <- 3#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Somewhat satisfied"] <- 4#
+staff_sub$satisfied_office_nominal[staff_sub$satisfied_office=="Very satisfied"] <- 5#
+# est_vars <- c("salary_nominal" , "positionrecode" , "tenure_currentposition" , "tenure_congress" , "age_recode" , "q1" , "q2" , "race" , "gender" , "employment_status" , "member_party" , "supervision_nominal" , "education" , "office_location")#
+# estimation_data <- select(staff_sub, one_of(est_vars))#
+estimation_data <- staff_sub[complete.cases(staff_sub),]#
+#
+model1 <- lm(salary_nominal ~ positionrecode + tenure_currentposition:positionrecode + congress_chamber:positionrecode + tenure_congress + age_recode +q1 + q2 + race + gender + employment_status + member_party + supervision_nominal + education + office_location, data=estimation_data)#
+summary(model1)#
+#
+estimation_data$salary_expected <- model1$fit#
+estimation_data$salary_diff <- estimation_data$salary_nominal - estimation_data$salary_expected#
+#
+estimation_data$high_salary_treatment <- 0#
+estimation_data$high_salary_treatment[estimation_data$salary_diff > 0] <- 1#
+#
+matched_staff_data <- matchit(high_salary_treatment ~ salary_expected + satisfied_job_nominal + satisfied_office_nominal, data=estimation_data, method="optimal")#
+matched_staff_data <- match.data(matched_staff_data)#
+MatchBalance(high_salary_treatment ~ salary_expected + satisfied_job_nominal + satisfied_office_nominal, data=matched_staff_data)#
+#
+matched_use <- subset(matched_staff_data, weights ==1)#
+model2 <- lm(likely2leave_nominal ~ high_salary_treatment + salary_expected + satisfied_job_nominal + satisfied_office_nominal, data=matched_use)
+summary(model2)
+model2 <- lm(likely2leave_nominal ~ high_salary_treatment, data=matched_use)
+summary(model2)
+dim(estimation_data)
+dim(staff_sub)
+summary(staff_sub$likely2leave)
+(246+188)/(116+188+204+246+301)
+summary(staff_sub)
+table(staff_sub$likely2leave, staff_sub$salary_nominal)
+levels(staff_sub$likely2leave)
+staff_sub$likely2leave <- c("Not applicable, I am a shared employee and I work for mult", "Very unlikely", "Unlikely", "Don't know/Unsure", "Likely", "Very likely")
+levels(staff_sub$likely2leave) <- c("Not applicable, I am a shared employee and I work for mult", "Very unlikely", "Unlikely", "Don't know/Unsure", "Likely", "Very likely")
+library(ggplot2)
+ggplot(staff_sub, aes(salary, likely2leave)) +geom_tile()
+ggplot(staff_sub, aes(likely2leave, salary)) +geom_tile()
+ggplot(staff_sub, aes(likely2leave, salary_nominal)) +geom_tile()
+ggplot(staff_sub, aes(likely2leave, salary_nominal)) +geom_tile() + scale_fill_gradient(low = "white",  high = "steelblue")
+ggplot(staff_sub, aes(likely2leave, salary_nominal)) + geom_raster() + scale_fill_gradient(low = "white",  high = "steelblue")
+ggplot(staff_sub, aes(likely2leave, salary_nominal)) + geom_raster()
+ggplot(staff_sub, aes(likely2leave, salary_nominal)) + geom_raster(fill=density)
+ggplot(staff_sub, aes(likely2leave, salary_nominal)) + geom_raster(fill=..density..)
+ggplot(staff_sub, aes(likely2leave, salary_nominal)) + geom_raster(aes(fill = density))
+corr_dat <- summarise(group_by(staff_sub, likely2leave, salary), count = n())
+ggplot(corr_dat, aes(likely2leave, salary, fill=value)) + geom_raster()
+ggplot(corr_dat, aes(likely2leave, salary, fill=count)) + geom_raster()
+corr_dat <- corr_dat[complete.cases(corr_dat),]
+ggplot(corr_dat, aes(likely2leave, salary, fill=count)) + geom_raster()
+levels(corr_dat$salary)
+levels(corr_dat$salary) <- c( "Less than $10,000", "$10,000 - $19,000" , "$20,000 - $29,000" , "$30,000 - $39,000" ,  "$40,000 - $49,000" ,  "$50,000 - $59,000" , "$60,000 - $69,000"  , "$70,000 - $79,000"  , "$80,000 - $89,000"  , "$90,000 - $99,000"  , "$100,000 - $109,000" , "$110,000 - $119,000" , "$120,000 - $129,000", "$130,000 - $139,000" , "$140,000 - $149,000" , "$150,000 - $159,000" , "$160,000 or more")
+ggplot(corr_dat, aes(likely2leave, salary, fill=count)) + geom_raster()
+ggplot(corr_dat, aes(likely2leave, salary, fill=count)) + geom_raster() + scale_fill_gradient(low = "white",#
++     high = "steelblue")
+ggplot(corr_dat, aes(likely2leave, salary, fill=count)) + geom_raster() + scale_fill_gradient(low = "white", high = "steelblue")
+df <- expand.grid(likely2leave, salary)
+df <- expand.grid(staff_sub$likely2leave, staff_sub$salary)
+df <- left_join(df, corr_dat)
+head(df)
+names(df) <- c("likely2leave", "salary")
+df <- left_join(df, corr_dat)
+df <- expand.grid(staff_sub$likely2leave, staff_sub$salary)
+df <- df[complete.cases(df),]
+df <- left_join(df, corr_dat)
+names(df) <- c("likely2leave", "salary")
+df <- left_join(df, corr_dat)
+head(df)
+levels(df$salary) <- c( "Less than $10,000", "$10,000 - $19,000" , "$20,000 - $29,000" , "$30,000 - $39,000" ,  "$40,000 - $49,000" ,  "$50,000 - $59,000" , "$60,000 - $69,000"  , "$70,000 - $79,000"  , "$80,000 - $89,000"  , "$90,000 - $99,000"  , "$100,000 - $109,000" , "$110,000 - $119,000" , "$120,000 - $129,000", "$130,000 - $139,000" , "$140,000 - $149,000" , "$150,000 - $159,000" , "$160,000 or more")
+levels(df$likely2leave) <- c("Not applicable, I am a shared employee and I work for mult", "Very unlikely", "Unlikely", "Don't know/Unsure", "Likely", "Very likely")
+ggplot(corr_dat, aes(likely2leave, salary, fill=count)) + geom_raster() + scale_fill_gradient(low = "white", high = "steelblue")
+head(df)
+df$count[df$count==NA]<-0
+ggplot(corr_dat, aes(likely2leave, salary, fill=count)) + geom_raster() + scale_fill_gradient(low = "white", high = "steelblue")
+corr_dat
+df
+df <- expand.grid(unique(staff_sub$likely2leave), unique(staff_sub$salary))
+df
+df <- df[complete.cases(df),]
+names(df) <- c("likely2leave", "salary")
+df <- left_join(df, corr_dat)
+head(df)
+df$count[df$count==NA]<-0
+head(df)
+df$count[df$count=="NA"]<-0
+head(df)
+head(corr_dat)
+summary(corr_dat$count)
+df$count[is.na(df$count)]<-0
+head(df)
+ggplot(df, aes(likely2leave, salary, fill=count)) + geom_raster() + scale_fill_gradient(low = "white", high = "steelblue")
+levels(df$likely2leave) <- c("Not applicable, I am a shared employee and I work for mult", "Very unlikely", "Unlikely", "Don't know/Unsure", "Likely", "Very likely")
+levels(df$salary) <- c( "Less than $10,000", "$10,000 - $19,000" , "$20,000 - $29,000" , "$30,000 - $39,000" ,  "$40,000 - $49,000" ,  "$50,000 - $59,000" , "$60,000 - $69,000"  , "$70,000 - $79,000"  , "$80,000 - $89,000"  , "$90,000 - $99,000"  , "$100,000 - $109,000" , "$110,000 - $119,000" , "$120,000 - $129,000", "$130,000 - $139,000" , "$140,000 - $149,000" , "$150,000 - $159,000" , "$160,000 or more")
+ggplot(df, aes(likely2leave, salary, fill=count)) + geom_raster() + scale_fill_gradient(low = "white", high = "steelblue")
+levels(df$salary) <- c( "Less than $10,000", "$10,000 - $19,000" , "$20,000 - $29,000" , "$30,000 - $39,000" ,  "$40,000 - $49,000" ,  "$50,000 - $59,000" , "$60,000 - $69,000"  , "$70,000 - $79,000"  , "$80,000 - $89,000"  , "$90,000 - $99,000"  , "$100,000 - $109,000" , "$110,000 - $119,000" , "$120,000 - $129,000", "$130,000 - $139,000" , "$140,000 - $149,000" , "$150,000 - $159,000" , "$160,000 or more")
+ggplot(df, aes(likely2leave, salary, fill=count)) + geom_raster() + scale_fill_gradient(low = "white", high = "steelblue")
+levels(df$salary)
+df$salary <- as.factor(df$salary)
+levels(df$salary) <- c( "Less than $10,000", "$10,000 - $19,000" , "$20,000 - $29,000" , "$30,000 - $39,000" ,  "$40,000 - $49,000" ,  "$50,000 - $59,000" , "$60,000 - $69,000"  , "$70,000 - $79,000"  , "$80,000 - $89,000"  , "$90,000 - $99,000"  , "$100,000 - $109,000" , "$110,000 - $119,000" , "$120,000 - $129,000", "$130,000 - $139,000" , "$140,000 - $149,000" , "$150,000 - $159,000" , "$160,000 or more")
+ggplot(df, aes(likely2leave, salary, fill=count)) + geom_raster() + scale_fill_gradient(low = "white", high = "steelblue")
+ggplot(df, aes(likely2leave, salary, fill=count)) + geom_raster() + scale_fill_gradient(low = "white", high = "steelblue") + theme_minimal()
+ggplot(df, aes(likely2leave, salary, fill=count)) + geom_raster() + scale_fill_gradient(low = "white", high = "steelblue") + theme_minimal() + theme(axis.text.x = element_text(angle = 45, vjust = 1, #
+    size = 12, hjust = 1))
+ggplot(df, aes(likely2leave, salary, fill=count)) + geom_raster() + scale_fill_gradient(low = "white", high = "steelblue") + theme_minimal() + theme(axis.text.x = element_text(angle = 45, vjust = 1, #
+    size = 6, hjust = 1))
+df2 <- subset(df$likely2leave != "Not applicable, I am a shared employee and I work for mult")
+df2 <- subset(df, likely2leave != "Not applicable, I am a shared employee and I work for mult")
+ggplot(df2, aes(likely2leave, salary, fill=count)) + geom_raster() + scale_fill_gradient(low = "white", high = "steelblue") + theme_minimal() + theme(axis.text.x = element_text(angle = 45, vjust = 1, #
+    size = 6, hjust = 1))
+ggplot(df2, aes(likely2leave, salary, fill=count)) + geom_tile() + scale_fill_gradient(low = "white", high = "steelblue") + theme_minimal() + theme(axis.text.x = element_text(angle = 45, vjust = 1, #
+    size = 6, hjust = 1))
+ggplot(df2, aes(likely2leave, salary, fill=count)) + geom_raster() + scale_fill_gradient(low = "white", high = "steelblue") + theme_minimal() + theme(axis.text.x = element_text(angle = 45, vjust = 1, #
+    size = 6, hjust = 1))
+df2$likely2leave <- as.factor(df2$likely2leave)
+ggplot(df2, aes(likely2leave, salary, fill=count)) + geom_raster() + scale_fill_gradient(low = "white", high = "steelblue") + theme_minimal() + theme(axis.text.x = element_text(angle = 45, vjust = 1, #
+    size = 6, hjust = 1))
+levels(df2$likely2leave) <- c( "Very unlikely", "Unlikely", "Don't know/Unsure", "Likely", "Very likely")
+levels(df2$likely2leave)
+df2$likely2leave <- as.character(df2$likely2leave)
+df2$likely2leave <- as.factor(df2$likely2leave)
+levels(df2$likely2leave)
+levels(df2$likely2leave) <- c( "Very unlikely", "Unlikely", "Don't know/Unsure", "Likely", "Very likely")
+ggplot(df2, aes(likely2leave, salary, fill=count)) + geom_raster() + scale_fill_gradient(low = "white", high = "steelblue") + theme_minimal() + theme(axis.text.x = element_text(angle = 45, vjust = 1, #
+    size = 6, hjust = 1))
+levels(df2$likely2leave) <- c( "Don't know/Unsure", "Very unlikely", "Unlikely", "Likely", "Very likely")
+ggplot(df2, aes(likely2leave, salary, fill=count)) + geom_raster() + scale_fill_gradient(low = "white", high = "steelblue") + theme_minimal() + theme(axis.text.x = element_text(angle = 45, vjust = 1, #
+    size = 6, hjust = 1))
+ggplot(df2, aes(likely2leave, salary, fill=count)) + geom_tile() + scale_fill_gradient(low = "white", high = "steelblue") + theme_minimal() + theme(axis.text.x = element_text(angle = 45, vjust = 1, #
+    size = 6, hjust = 1))
+levels(df2$likely2leave) <- c( "Very unlikely", "Unlikely", "Don't know/Unsure", "Likely", "Very likely")
+ggplot(df2, aes(likely2leave, salary, fill=count)) + geom_tile() + scale_fill_gradient(low = "white", high = "steelblue") + theme_minimal() + theme(axis.text.x = element_text(angle = 45, vjust = 1, #
+    size = 6, hjust = 1))
+head(corr_dat)
+corr_dat_subset <- subset(corr_dat, likely2leave != "Not applicable, I am a shared employee and I work for mult")
+ggplot(corr_dat_sub, aes(likely2leave, salary, fill=count)) + geom_tile() + scale_fill_gradient(low = "white", high = "steelblue") + theme_minimal() + theme(axis.text.x = element_text(angle = 45, vjust = 1, #
+    size = 6, hjust = 1))
+ggplot(corr_dat_subset, aes(likely2leave, salary, fill=count)) + geom_tile() + scale_fill_gradient(low = "white", high = "steelblue") + theme_minimal() + theme(axis.text.x = element_text(angle = 45, vjust = 1, #
+    size = 6, hjust = 1))
+head(staff_sub)
+summary(staff_sub$likely2leave)
+pairwise
+library(dplyr)#
+#set your working directory here#
+setwd("/Users/alexanderfurnas/Projects/Work with Axelrod/Landscape_Theory/Public_version/")#
+#
+#load data -- make sure you are using the appropriate file names and they are in your working directory.#
+pairwise <- read.table("pairwise_relationships_names.csv", header = TRUE, row.names=1, #
+                           sep = ",")#
+actor_data <- read.csv("Actor_data..csv")#
+#output filepath -- put file name here, wd is default directory#
+filepath <- "Landscape_Results_weaksyria"#
+#
+#output filepath for favorite alignments - put file name here, wd is default directory#
+filepath_fav <- "Landscape_Favored_Alignments_weaksyria"#
+#function for to get all of the possible alliances#
+get_groupings<- function(n){#
+    List <- list()  #
+    for(nt in 1:as.integer(n+1/2)){#
+        C = combn(n,nt)#
+        l = ncol(C)#
+        Z = matrix(2, nrow=n,ncol=l)#
+        for(j in 1:l){Z[C[,j],j] = 1#
+        List[[nt]] <- Z#
+    }#
+        }#
+    Matrix = do.call(cbind, List)#
+    return(Matrix)#
+    }#
+#
+#function to get the distance matrix for a given alliance#
+get_distance_mat <-function(g){#
+g<- replace(g, g==0, 2)#
+g_mat <- outer(g,g)#
+g_mat <- replace(g_mat, g_mat==4,0)#
+g_mat <- replace(g_mat, g_mat==1,0)#
+g_mat <- replace(g_mat, g_mat==2,1)#
+return(g_mat)#
+    }#
+#
+#function to calculate the scores for all of the possible alliances#
+get_scores <- function(grps, strength_mat, pairwise){#
+List <- list() #
+    for (gr in 1:ncol(grps)){#
+    dist <- get_distance_mat(grps[,gr])#
+    frust_mat <- dist * strength_mat * pairwise#
+    frustrations <- t(apply(frust_mat, 1, sum))#
+    energy <- sum(frust_mat)#
+    grouping_result <- c(grps[,gr],energy, frustrations)#
+    List[[gr]] <- grouping_result#
+    }#
+    result <- as.data.frame(t(do.call(cbind, List)))#
+    result <- as.data.frame(result)#
+    names(result) <- c(colnames(pairwise), "Energy", lapply(colnames(pairwise), paste0, "_Frustration"))#
+    result <- filter(result, US == 1)#
+    lmvec <- apply(result, 1, check_local_min, n=ncol(pairwise), strength_mat=strength_mat, pairwise=pairwise)#
+    output <- cbind(result, lmvec)#
+    cnames <- c(colnames(pairwise), "Energy", lapply(colnames(pairwise), paste0, "_Frustration"), "Local Min")#
+    names(output) <- cnames#
+    return(output)#
+}#
+#
+#function to find the hamming distance between two vectors#
+hamm <- function(vec1, vec2){#
+    hd <- sum(vec1 != vec2)#
+    return(hd)#
+        }#
+#
+check_local_minall <- function(n, mat){#
+    for(i in 1:nrow(mat)){#
+        tocheck <- mat[i,]  #
+        energy <- tocheck[n+1]#
+        n_energies <- c()#
+        for(v in 1:nrow(mat)){#
+            row <- mat[v,]#
+         if(hamm(tocheck[1:n],row[1:11]) == 1)#
+             n_energies <- c(n_energies, row[n+1])#
+        }#
+            min_ne <- min(unlist(n_energies))#
+#
+            if (min_ne > energy)#
+                result <- c(tocheck, "True")#
+            else#
+                result <- c(tocheck, "False")#
+                print(result)#
+    }#
+}#
+#
+#fucntion to get neighboring allignments for a given alignment#
+get_neighbors <- function(vec){#
+    cdim <- length(vec)#
+    neighbors <- matrix(0,ncol=cdim, nrow=cdim)#
+for (i in 1:cdim){#
+    ntv <- vec#
+    if (ntv[i]== 1)#
+        ntv[i]<-2#
+    else#
+        ntv[i] <- 1#
+    neighbors[i,] <- ntv#
+#
+}#
+        return(neighbors)#
+        }#
+#function to check whether a given alignment is a local minimum#
+check_local_min <- function(i, n, strength_mat, pairwise){#
+    n_energies <- c()#
+    neighbors <- get_neighbors(i[1:11])#
+    energy <- sum(get_distance_mat(i[1:11])* strength_mat * pairwise)#
+    for(v in 1:nrow(neighbors)){#
+        row <- neighbors[v,]#
+        dist<-get_distance_mat(row)#
+        n_energy <- sum(dist * strength_mat * pairwise)#
+        n_energies <- c(n_energies, n_energy)#
+        min_ne <- min(unlist(n_energies))#
+}#
+        if (min_ne >= energy)#
+            return(TRUE)#
+        else#
+            return(FALSE)#
+}#
+#rescale pairwise relationships#
+pairwise_scaled <- pairwise -3#
+pairwise_scaled[ row(pairwise_scaled) == col(pairwise_scaled) ] <- 0#
+#
+strength_mat <- outer(as.numeric(actor_data$strength), as.numeric(actor_data$strength))#
+grps <-get_groupings(ncol(pairwise_scaled))#
+#
+#get all the scores#
+res <- get_scores(grps, strength_mat, pairwise_scaled)#
+#
+#prepare data to output#
+res1 <- as.data.frame(res)#
+filepath <- paste(filepath, Sys.Date(), sep="_")#
+filepath <- paste(filepath, "csv", sep =".")#
+#write.csv(res1, filepath)#
+#
+#get everyone's favorite alignment#
+#
+Optimal  <- subset(res1, Energy==min(Energy))#
+US_best <- subset(res1, US_Frustration==min(US_Frustration))#
+Rus_best <- subset(res1, Rus_Frustration==min(Rus_Frustration))#
+Syr_best <- subset(res1, Syr_Frustration==min(Syr_Frustration))#
+Tur_best <- subset(res1, Tur_Frustration==min(Tur_Frustration))#
+S.A._best <- subset(res1, S.A._Frustration==min(S.A._Frustration))#
+Iran_best <- subset(res1, Iran_Frustration==min(Iran_Frustration))#
+ISIS_best <- subset(res1, ISIS_Frustration==min(ISIS_Frustration))#
+Hez_best <- subset(res1, Hez_Frustration==min(Hez_Frustration))#
+IqKrd_best <- subset(res1, IqKrd_Frustration==min(IqKrd_Frustration))#
+Nursa_best <- subset(res1, Nursa_Frustration==min(Nursa_Frustration))#
+Iraq_best <- subset(res1, Iraq_Frustration==min(Iraq_Frustration))#
+#
+favorites <- rbind(Optimal, US_best, Rus_best, Syr_best, Tur_best, S.A._best, Iran_best, ISIS_best, Hez_best, IqKrd_best, Nursa_best, Iraq_best)#
+filepath_fav <- paste(filepath_fav, Sys.Date(), sep="_")#
+filepath_fav <- paste(filepath_fav, "csv", sep =".")#
+#write.csv(favorites, filepath_fav)#
+new_prop <- 1 - .2*pairwise#
+new_prop[is.na(new_prop)] <- 0#
+#
+prop_MDS <- cmdscale(as.matrix(weights), k=2)#
+library(igraph)#
+weights  <- new_prop*strength_mat#
+#
+prop_MDS <- cmdscale(as.matrix(new_prop), k=2)#
+#
+scaled_weights <- pairwise_scaled*strength_mat#
+net <- graph_from_adjacency_matrix(as.matrix(scaled_weights), weighted=TRUE, mode="undirected", diag=FALSE)#
+net <- as.undirected(net)#
+alignment <- unlist(Optimal[1:ncol(pairwise)])#
+V(net)$alignment <- alignment#
+V(net)$strength <- actor_data$strength#
+E(net)$lty[E(net)$weight > 0] <- 1#
+E(net)$lty[E(net)$weight < 0] <- 3#
+E(net)$color <- "black"#
+E(net)$color[E(net)$weight < 0] <- "grey"#
+plot(net, vertex.size=sqrt(V(net)$strength), mark.col = "#ededed", mark.border= "black", vertex.color="black",edge.width=sqrt(abs(E(net)$weight/500)), layout=prop_MDS, mark.groups=which(V(net)$alignment == 2), vertex.label.dist=1, vertex.label.color ="black", vertex.shape="square")
+library(dplyr)#
+#set your working directory here#
+setwd("/Users/alexanderfurnas/Projects/Work with Axelrod/Landscape_Theory/Public_version/")#
+#
+#load data -- make sure you are using the appropriate file names and they are in your working directory.#
+pairwise <- read.table("pairwise_relationships_names.csv", header = TRUE, row.names=1, #
+                           sep = ",")#
+actor_data <- read.csv("Actor_data.csv")#
+#output filepath -- put file name here, wd is default directory#
+filepath <- "Landscape_Results_weaksyria"#
+#
+#output filepath for favorite alignments - put file name here, wd is default directory#
+filepath_fav <- "Landscape_Favored_Alignments_weaksyria"#
+#function for to get all of the possible alliances#
+get_groupings<- function(n){#
+    List <- list()  #
+    for(nt in 1:as.integer(n+1/2)){#
+        C = combn(n,nt)#
+        l = ncol(C)#
+        Z = matrix(2, nrow=n,ncol=l)#
+        for(j in 1:l){Z[C[,j],j] = 1#
+        List[[nt]] <- Z#
+    }#
+        }#
+    Matrix = do.call(cbind, List)#
+    return(Matrix)#
+    }#
+#
+#function to get the distance matrix for a given alliance#
+get_distance_mat <-function(g){#
+g<- replace(g, g==0, 2)#
+g_mat <- outer(g,g)#
+g_mat <- replace(g_mat, g_mat==4,0)#
+g_mat <- replace(g_mat, g_mat==1,0)#
+g_mat <- replace(g_mat, g_mat==2,1)#
+return(g_mat)#
+    }#
+#
+#function to calculate the scores for all of the possible alliances#
+get_scores <- function(grps, strength_mat, pairwise){#
+List <- list() #
+    for (gr in 1:ncol(grps)){#
+    dist <- get_distance_mat(grps[,gr])#
+    frust_mat <- dist * strength_mat * pairwise#
+    frustrations <- t(apply(frust_mat, 1, sum))#
+    energy <- sum(frust_mat)#
+    grouping_result <- c(grps[,gr],energy, frustrations)#
+    List[[gr]] <- grouping_result#
+    }#
+    result <- as.data.frame(t(do.call(cbind, List)))#
+    result <- as.data.frame(result)#
+    names(result) <- c(colnames(pairwise), "Energy", lapply(colnames(pairwise), paste0, "_Frustration"))#
+    result <- filter(result, US == 1)#
+    lmvec <- apply(result, 1, check_local_min, n=ncol(pairwise), strength_mat=strength_mat, pairwise=pairwise)#
+    output <- cbind(result, lmvec)#
+    cnames <- c(colnames(pairwise), "Energy", lapply(colnames(pairwise), paste0, "_Frustration"), "Local Min")#
+    names(output) <- cnames#
+    return(output)#
+}#
+#
+#function to find the hamming distance between two vectors#
+hamm <- function(vec1, vec2){#
+    hd <- sum(vec1 != vec2)#
+    return(hd)#
+        }#
+#
+check_local_minall <- function(n, mat){#
+    for(i in 1:nrow(mat)){#
+        tocheck <- mat[i,]  #
+        energy <- tocheck[n+1]#
+        n_energies <- c()#
+        for(v in 1:nrow(mat)){#
+            row <- mat[v,]#
+         if(hamm(tocheck[1:n],row[1:11]) == 1)#
+             n_energies <- c(n_energies, row[n+1])#
+        }#
+            min_ne <- min(unlist(n_energies))#
+#
+            if (min_ne > energy)#
+                result <- c(tocheck, "True")#
+            else#
+                result <- c(tocheck, "False")#
+                print(result)#
+    }#
+}#
+#
+#fucntion to get neighboring allignments for a given alignment#
+get_neighbors <- function(vec){#
+    cdim <- length(vec)#
+    neighbors <- matrix(0,ncol=cdim, nrow=cdim)#
+for (i in 1:cdim){#
+    ntv <- vec#
+    if (ntv[i]== 1)#
+        ntv[i]<-2#
+    else#
+        ntv[i] <- 1#
+    neighbors[i,] <- ntv#
+#
+}#
+        return(neighbors)#
+        }#
+#function to check whether a given alignment is a local minimum#
+check_local_min <- function(i, n, strength_mat, pairwise){#
+    n_energies <- c()#
+    neighbors <- get_neighbors(i[1:11])#
+    energy <- sum(get_distance_mat(i[1:11])* strength_mat * pairwise)#
+    for(v in 1:nrow(neighbors)){#
+        row <- neighbors[v,]#
+        dist<-get_distance_mat(row)#
+        n_energy <- sum(dist * strength_mat * pairwise)#
+        n_energies <- c(n_energies, n_energy)#
+        min_ne <- min(unlist(n_energies))#
+}#
+        if (min_ne >= energy)#
+            return(TRUE)#
+        else#
+            return(FALSE)#
+}#
+#rescale pairwise relationships#
+pairwise_scaled <- pairwise -3#
+pairwise_scaled[ row(pairwise_scaled) == col(pairwise_scaled) ] <- 0#
+#
+strength_mat <- outer(as.numeric(actor_data$strength), as.numeric(actor_data$strength))#
+grps <-get_groupings(ncol(pairwise_scaled))#
+#
+#get all the scores#
+res <- get_scores(grps, strength_mat, pairwise_scaled)#
+#
+#prepare data to output#
+res1 <- as.data.frame(res)#
+filepath <- paste(filepath, Sys.Date(), sep="_")#
+filepath <- paste(filepath, "csv", sep =".")#
+#write.csv(res1, filepath)#
+#
+#get everyone's favorite alignment#
+#
+Optimal  <- subset(res1, Energy==min(Energy))#
+US_best <- subset(res1, US_Frustration==min(US_Frustration))#
+Rus_best <- subset(res1, Rus_Frustration==min(Rus_Frustration))#
+Syr_best <- subset(res1, Syr_Frustration==min(Syr_Frustration))#
+Tur_best <- subset(res1, Tur_Frustration==min(Tur_Frustration))#
+S.A._best <- subset(res1, S.A._Frustration==min(S.A._Frustration))#
+Iran_best <- subset(res1, Iran_Frustration==min(Iran_Frustration))#
+ISIS_best <- subset(res1, ISIS_Frustration==min(ISIS_Frustration))#
+Hez_best <- subset(res1, Hez_Frustration==min(Hez_Frustration))#
+IqKrd_best <- subset(res1, IqKrd_Frustration==min(IqKrd_Frustration))#
+Nursa_best <- subset(res1, Nursa_Frustration==min(Nursa_Frustration))#
+Iraq_best <- subset(res1, Iraq_Frustration==min(Iraq_Frustration))#
+#
+favorites <- rbind(Optimal, US_best, Rus_best, Syr_best, Tur_best, S.A._best, Iran_best, ISIS_best, Hez_best, IqKrd_best, Nursa_best, Iraq_best)#
+filepath_fav <- paste(filepath_fav, Sys.Date(), sep="_")#
+filepath_fav <- paste(filepath_fav, "csv", sep =".")#
+#write.csv(favorites, filepath_fav)#
+new_prop <- 1 - .2*pairwise#
+new_prop[is.na(new_prop)] <- 0#
+#
+prop_MDS <- cmdscale(as.matrix(weights), k=2)#
+library(igraph)#
+weights  <- new_prop*strength_mat#
+#
+prop_MDS <- cmdscale(as.matrix(new_prop), k=2)#
+#
+scaled_weights <- pairwise_scaled*strength_mat#
+net <- graph_from_adjacency_matrix(as.matrix(scaled_weights), weighted=TRUE, mode="undirected", diag=FALSE)#
+net <- as.undirected(net)#
+alignment <- unlist(Optimal[1:ncol(pairwise)])#
+V(net)$alignment <- alignment#
+V(net)$strength <- actor_data$strength#
+E(net)$lty[E(net)$weight > 0] <- 1#
+E(net)$lty[E(net)$weight < 0] <- 3#
+E(net)$color <- "black"#
+E(net)$color[E(net)$weight < 0] <- "grey"#
+plot(net, vertex.size=sqrt(V(net)$strength), mark.col = "#ededed", mark.border= "black", vertex.color="black",edge.width=sqrt(abs(E(net)$weight/500)), layout=prop_MDS, mark.groups=which(V(net)$alignment == 2), vertex.label.dist=1, vertex.label.color ="black", vertex.shape="square")
+weights
+?cmdscale
+scaled_weights <- pairwise_scaled#
+net <- graph_from_adjacency_matrix(as.matrix(scaled_weights), weighted=TRUE, mode="undirected", diag=FALSE)#
+net <- as.undirected(net)#
+alignment <- unlist(Optimal[1:ncol(pairwise)])#
+V(net)$alignment <- alignment#
+V(net)$strength <- actor_data$strength#
+E(net)$lty[E(net)$weight > 0] <- 1#
+E(net)$lty[E(net)$weight < 0] <- 3#
+E(net)$color <- "black"#
+E(net)$color[E(net)$weight < 0] <- "grey"#
+plot(net, vertex.size=sqrt(V(net)$strength), mark.col = "#ededed", mark.border= "black", vertex.color="black",edge.width=sqrt(abs(E(net)$weight/500)), layout=prop_MDS, mark.groups=which(V(net)$alignment == 2), vertex.label.dist=1, vertex.label.color ="black", vertex.shape="square")
+scaled_weights <- pairwise_scaled#
+net <- graph_from_adjacency_matrix(as.matrix(scaled_weights), weighted=TRUE, mode="undirected", diag=FALSE)#
+net <- as.undirected(net)#
+alignment <- unlist(Optimal[1:ncol(pairwise)])#
+V(net)$alignment <- alignment#
+V(net)$strength <- actor_data$strength#
+E(net)$lty[E(net)$weight > 0] <- 1#
+E(net)$lty[E(net)$weight < 0] <- 3#
+E(net)$color <- "black"#
+E(net)$color[E(net)$weight < 0] <- "grey"#
+plot(net, vertex.size=sqrt(V(net)$strength), mark.col = "#ededed", mark.border= "black", vertex.color="black",edge.width=E(net)$weight, layout=prop_MDS, mark.groups=which(V(net)$alignment == 2), vertex.label.dist=1, vertex.label.color ="black", vertex.shape="square")
+edge.width=E(net)$weight
+E(net)$weight
+?cmdscale
+pairwise_scaled
+E(net)$width <- abs(edge.width=E(net)$weight)
+E(net)$width <- abs(E(net)$weight)
+plot(net, vertex.size=sqrt(V(net)$strength), mark.col = "#ededed", mark.border= "black", vertex.color="black",edge.width=E(net)$width, layout=prop_MDS, mark.groups=which(V(net)$alignment == 2), vertex.label.dist=1, vertex.label.color ="black", vertex.shape="square")
+plot(net, vertex.size=sqrt(V(net)$strength), mark.col = "#ededed", mark.border= "black", vertex.color="black",edge.width=E(net)$width, layout=prop_MDS, vertex.label.dist=1, vertex.label.color ="black", vertex.shape="square")
+E(net)$width[E(net)$width == 2] <- 3
+plot(net, vertex.size=sqrt(V(net)$strength), mark.col = "#ededed", mark.border= "black", vertex.color="black",edge.width=E(net)$width, layout=prop_MDS, vertex.label.dist=1, vertex.label.color ="black", vertex.shape="square")
+faca <- read.csv("/Users/alexanderfurnas/Downloads/faca_records.csv")#
+faca$start_date <- as.Date(faca$start_date)
+DT <- data.table(faca)#
+first_comm <- DT[,.SD[start_date==min(start_date)],by=committee_name]#
+#
+first_comm05 <- subset(first_comm, start_date > as.Date("2004-12-31"))#
+#
+first_comm05$year <- year(first_comm05$start_date)
+library(data.table)
+DT <- data.table(faca)#
+first_comm <- DT[,.SD[start_date==min(start_date)],by=committee_name]#
+#
+first_comm05 <- subset(first_comm, start_date > as.Date("2004-12-31"))#
+#
+first_comm05$year <- year(first_comm05$start_date)
+head(first_comm05)
+summary(represented_group)
+summary(first_comm05$represented_group)
+length(unique(first_comm05$represented_group))
+groups <- summarise(group_by(first_comm05, represented_group, agency_name, year), num = n())#
+#
+groups <- subset(groups, represented_group != "")
+head(groups)
+groups <- arrange(groups, desc(num))
+head(groups)
+summary(first_comm05$year)
+length(unique(groups$represented_group))
+groups <- summarise(group_by(first_comm05[year > 2006], represented_group, agency_name, year), num = n())#
+#
+groups <- subset(groups, represented_group != "")
+length(unique(groups$represented_group))
+groups <- summarise(group_by(first_comm05[year > 2007], represented_group, agency_name, year), num = n())#
+#
+groups <- subset(groups, represented_group != "")
+length(unique(groups$represented_group))
+groups <- first_comm05$represented_group
+groups <- as.data.frame(groups)
+write.csv(groups, "/Users/alexanderfurnas/2015-16Coursework/American_Institutions_Final/First_Groups_tocode.csv")
+groups <- unique(first_comm05$represented_group)
+groups <- as.data.frame(groups)
+write.csv(groups, "/Users/alexanderfurnas/2015-16Coursework/American_Institutions_Final/First_Groups_tocode.csv")
+length(unique(first_comm05$org_id))
+groups <- summarise(group_by(first_comm05, represented_group, org_name, org_id), num =n())
+head(groups)
+groups2 <- filter(groups, represented_group != "")
+head(groups2)
+dim(groups2)
+lobbying <- read.csv("/Users/alexanderfurnas/Projects/Work with Rick/lobbying_7.26/lobbying.csv")
+head(lobbying)
+reps <- first_comm05[member_designation == "representative"]
+reps
+unique(first_comm05$member_designation)
+reps <- first_comm05[member_designation == "Representative"]
+groups <- summarise(group_by(reps, represented_group, org_name, org_id), num =n())
+length(unique(groups_represented_group))
+length(unique(groups$represented_group))
+length(unique(groups2$represented_group))
+groups <- filter(groups, represented_group !="")
+write.csv(groups, "/Users/alexanderfurnas/2015-16Coursework/American_Institutions_Final/First_Groups_tocode.csv")
+groups2 <- as.data.frame(unique(reps$represented_group))
+write.csv(groups, "/Users/alexanderfurnas/2015-16Coursework/American_Institutions_Final/First_Groups_tocodegroup_only.csv")
+groups2 <- summarise(group_by(reps, represented_group), num =n())
+write.csv(groups2, "/Users/alexanderfurnas/2015-16Coursework/American_Institutions_Final/First_Groups_tocodegroup_only.csv")
+first_comm05[represented_group == "Emergency Response"]
